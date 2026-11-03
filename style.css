@@ -229,6 +229,83 @@ img { display: block; max-width: 100%; }
 }
 .p-next a:hover { color: var(--cyan); }
 
+/* ---------- 3D model viewer ---------- */
+.robots {
+  display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(280px, 1fr);
+  gap: 32px; margin: 0 0 96px; align-items: start;
+}
+.viewer {
+  position: relative; aspect-ratio: 4 / 3; overflow: hidden;
+  border: 1px solid var(--line); border-radius: 4px;
+  background:
+    radial-gradient(ellipse at 50% 70%, rgba(0,229,255,.08), transparent 60%),
+    var(--surface);
+}
+.viewer::before, .viewer::after {   /* corner brackets */
+  content: ""; position: absolute; width: 18px; height: 18px; pointer-events: none; z-index: 2;
+  border: 1px solid var(--cyan); opacity: .7;
+}
+.viewer::before { top: 10px; left: 10px; border-right: 0; border-bottom: 0; }
+.viewer::after { bottom: 10px; right: 10px; border-left: 0; border-top: 0; }
+.viewer-canvas { position: absolute; inset: 0; cursor: grab; }
+.viewer-canvas:active { cursor: grabbing; }
+.viewer-canvas canvas { display: block; width: 100%; height: 100%; }
+.viewer-canvas.zoom-on { box-shadow: inset 0 0 0 1px var(--cyan-soft); }
+
+.viewer-top, .viewer-foot {
+  position: absolute; left: 22px; right: 22px; z-index: 1;
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  font-family: var(--mono); font-size: 12px; color: var(--muted);
+  pointer-events: none;
+}
+.viewer-top { top: 18px; }
+.viewer-foot { bottom: 16px; }
+.viewer-id b { color: var(--cyan); font-weight: 400; }
+.viewer-name { color: var(--text); }
+.viewer-status { transition: color .3s; }
+.viewer[data-state="loading"] .viewer-status { color: var(--cyan); animation: blink 1s steps(2) infinite; }
+.viewer[data-state="error"] .viewer-status { color: #ff6b6b; }
+@keyframes blink { 50% { opacity: .35; } }
+
+.viewer-bar {
+  position: absolute; left: 0; right: 0; top: 0; height: 2px; z-index: 1;
+  opacity: 0; transition: opacity .4s;
+}
+.viewer[data-state="loading"] .viewer-bar { opacity: 1; }
+.viewer-bar i {
+  display: block; height: 100%; background: var(--cyan); box-shadow: 0 0 8px var(--cyan);
+  transform-origin: left; transform: scaleX(0); transition: transform .2s;
+}
+.viewer-ctrls { display: flex; gap: 6px; pointer-events: auto; }
+.viewer-ctrls button {
+  font: inherit; color: var(--muted); background: rgba(0,0,0,.55);
+  border: 1px solid var(--line-strong); border-radius: 2px; padding: 5px 9px; cursor: pointer;
+  transition: color .2s, border-color .2s, background .2s;
+}
+.viewer-ctrls button:hover { color: var(--text); border-color: var(--muted); }
+.viewer-ctrls button[aria-pressed="true"] { color: var(--cyan); border-color: var(--cyan-soft); background: var(--cyan-faint); }
+
+.model-side { display: flex; flex-direction: column; gap: 28px; }
+.model-tabs { display: flex; flex-direction: column; border-top: 1px solid var(--line); }
+.model-tab {
+  display: grid; grid-template-columns: 34px 1fr auto; align-items: baseline; gap: 8px;
+  width: 100%; text-align: left; cursor: pointer;
+  font: inherit; color: var(--muted); background: none;
+  border: 0; border-bottom: 1px solid var(--line); padding: 14px 4px;
+  transition: color .2s, background .2s, padding .3s var(--ease);
+}
+.model-tab:hover { color: var(--text); }
+.model-tab .mt-num, .model-tab .mt-season { font-family: var(--mono); font-size: 12px; }
+.model-tab .mt-name { font-size: 18px; font-weight: 500; letter-spacing: -0.01em; }
+.model-tab[aria-selected="true"] { color: var(--text); background: linear-gradient(90deg, var(--cyan-faint), transparent); padding-left: 12px; }
+.model-tab[aria-selected="true"] .mt-num { color: var(--cyan); }
+
+.model-info { animation: viewIn .5s var(--ease) both; }
+.mi-name { margin: 0 0 6px; font-size: clamp(26px, 3vw, 34px); font-weight: 500; letter-spacing: -0.03em; }
+.mi-meta { margin: 0 0 18px; font-family: var(--mono); font-size: 12px; color: var(--cyan); }
+.mi-desc { margin: 0 0 14px; color: #b7cacd; font-size: 16px; line-height: 1.6; }
+.model-info .p-meta { margin: 18px 0 0; }
+
 /* ---------- Small screens ---------- */
 @media (max-width: 720px) {
   :root { --card-w: 84vw; --card-gap: 14px; }
@@ -237,6 +314,14 @@ img { display: block; max-width: 100%; }
   .slide-open { opacity: 1; transform: none; }
   .slide-frame { aspect-ratio: 4 / 5; max-height: 62vh; }
   .ph-note { display: none; }
+  .robots { grid-template-columns: 1fr; gap: 24px; margin-bottom: 64px; }
+  .viewer { aspect-ratio: 1 / 1; }
+  .viewer-hint { display: none; }
+  .viewer-foot { justify-content: flex-end; }
+}
+@media (min-width: 721px) and (max-width: 980px) {
+  .robots { grid-template-columns: 1fr; }
+  .viewer { aspect-ratio: 16 / 10; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -73,12 +73,58 @@ const PROJECTS = [
   },
   {
     slug: "vex-4253z",
-    title: "VEX Robot · 4253Z",
-    year: "2026",
-    tags: ["VEX V5", "Robotics", "Team 4253Z"],
+    title: "VEX Robots · 4253Z",
+    year: "2024–27",
+    tags: ["VEX V5", "CAD", "Team 4253Z"],
     summary:
-      "Competition robot for VEX team 4253Z Raid Zero Z. Designed, built and documented across the season in a full engineering notebook.",
+      "Three seasons of competition robots for VEX team 4253Z Raid Zero Z. Every robot is modeled in CAD before it's built, then rebuilt as the season teaches us what breaks. Spin them below.",
     images: [],
     links: [],
+    // 3D models: put the .glb in this folder. Fields: src, name, season, game, description, tags, rotate (deg)
+    models: [
+      {
+        src: "chainbar.glb",
+        name: "Chainbar",
+        season: "2026–27",
+        description: [
+          "This season's robot, built around a chain bar lift. Twin towers run a chain on each side, so the end of the arm stays level as it swings up instead of tipping the game piece.",
+          "Low, wide drive base under a tall lift, with the electronics mounted high on the towers to keep the base clear.",
+        ],
+        tags: ["Chain bar", "Sprockets", "V5 motors"],
+      },
+      {
+        src: "push-back-v2.glb",
+        name: "Push Back V2",
+        season: "2025–26",
+        game: "Push Back",
+        description: [
+          "The rebuild. Same idea as V1, an angled roller tower that pulls blocks off the floor and up into the goals, but with plate side walls to guide the blocks and pneumatics added up top.",
+          "Built after V1 showed us where blocks jammed and where the structure flexed.",
+        ],
+        tags: ["Roller intake", "Pneumatics", "Rebuild"],
+      },
+      {
+        src: "push-back.glb",
+        name: "Push Back V1",
+        season: "2025–26",
+        game: "Push Back",
+        description: [
+          "First robot of the Push Back season. Two angled towers carry a stack of sprocket-driven rollers that lift blocks from the floor intake to goal height.",
+          "A front plate on a long arm reaches out ahead of the drive, and the whole intake is mounted on an open frame to keep it light.",
+        ],
+        tags: ["Roller intake", "Sprocket drive", "V1"],
+      },
+      {
+        src: "high-stakes.glb",
+        name: "High Stakes",
+        season: "2024–25",
+        game: "High Stakes",
+        description: [
+          "Our High Stakes robot. Rings ride up an angled conveyor tower and drop onto the stakes, with pneumatic cylinders running the mechanisms on the base.",
+          "Six-wheel drive with a tall rear structure, the starting point for everything that came after.",
+        ],
+        tags: ["Conveyor", "Pneumatics", "6-wheel drive"],
+      },
+    ],
   },
 ];

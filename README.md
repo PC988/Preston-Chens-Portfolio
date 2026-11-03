@@ -10,6 +10,11 @@ Open `index.html` in a browser to view it. No install, no server.
 
 Newest project at the top = first slide.
 
+## Add a 3D model
+Put a `.glb` in the project's folder and list it under `models` in `content.js` (see the VEX project).
+Raw CAD STLs are too big for the web. Shrink them first, e.g. with `gltfpack -i robot.glb -o small.glb -si 0.15 -cc -noq`,
+and keep each file under ~3 MB.
+
 ## Edit the About page
 Change `ABOUT` at the top of `content.js`.
 

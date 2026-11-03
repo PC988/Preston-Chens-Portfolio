@@ -86,9 +86,10 @@
         </div>
         <p class="p-summary">${esc(p.summary)}</p>
         ${(p.links || []).length ? `<div class="link-row" style="margin:-24px 0 56px">${p.links.map((l) => `<a class="btn" href="${esc(l.href)}" target="_blank" rel="noopener">${esc(l.label)} ↗</a>`).join("")}</div>` : ""}
+        ${(p.models || []).length ? modelsSection(p) : ""}
         <div class="gallery">
-          <figure class="shot cover-shot"><img src="${esc(coverOf(p))}" alt="${esc(p.title)}" /></figure>
-          ${gallery}
+          ${(p.models || []).length ? "" : `<figure class="shot cover-shot"><img src="${esc(coverOf(p))}" alt="${esc(p.title)}" /></figure>`}
+          ${imgs.length || !(p.models || []).length ? gallery : ""}
         </div>
         ${PROJECTS.length > 1 ? `
         <nav class="p-next">
@@ -99,11 +100,123 @@
 
     // Hide the cover block if there's no cover.jpg yet
     const cover = app.querySelector(".cover-shot img");
-    cover.addEventListener("error", () => cover.parentElement.remove());
+    if (cover) cover.addEventListener("error", () => cover.parentElement.remove());
+
+    const disposeModels = (p.models || []).length ? mountModels(p) : null;
 
     const onKey = (e) => { if (e.key === "Escape") location.hash = "#/"; };
     window.addEventListener("keydown", onKey);
-    cleanup = () => window.removeEventListener("keydown", onKey);
+    cleanup = () => { window.removeEventListener("keydown", onKey); if (disposeModels) disposeModels(); };
+  }
+
+  /* ---------- 3D models (project page) ---------- */
+  const normModels = (p) => (p.models || []).filter((m) => m && m.src);
+
+  function modelsSection(p) {
+    const models = normModels(p);
+    return `
+      <section class="robots" aria-label="3D models">
+        <div class="viewer" data-state="loading">
+          <div class="viewer-canvas"></div>
+          <div class="viewer-top">
+            <span class="viewer-id"><b>${pad(1)}</b> / ${pad(models.length)}&nbsp;&nbsp;<span class="viewer-name">${esc(models[0].name)}</span></span>
+            <span class="viewer-status">Loading model</span>
+          </div>
+          <div class="viewer-bar"><i></i></div>
+          <div class="viewer-foot">
+            <span class="viewer-hint">Drag to rotate · Click, then scroll to zoom</span>
+            <span class="viewer-ctrls">
+              <button type="button" data-act="spin" aria-pressed="true">Spin</button>
+              <button type="button" data-act="wire" aria-pressed="false">Wire</button>
+              <button type="button" data-act="reset">Reset</button>
+            </span>
+          </div>
+        </div>
+        <div class="model-side">
+          <div class="model-tabs" role="tablist">
+            ${models.map((m, k) => `
+              <button type="button" role="tab" class="model-tab" data-k="${k}" aria-selected="${k === 0}">
+                <span class="mt-num">${pad(k + 1)}</span>
+                <span class="mt-name">${esc(m.name)}</span>
+                <span class="mt-season">${esc(m.season || "")}</span>
+              </button>`).join("")}
+          </div>
+          <div class="model-info" aria-live="polite"></div>
+        </div>
+      </section>`;
+  }
+
+  function mountModels(p) {
+    const models = normModels(p);
+    const root = app.querySelector(".robots");
+    const viewerEl = root.querySelector(".viewer");
+    const canvasWrap = root.querySelector(".viewer-canvas");
+    const bar = root.querySelector(".viewer-bar i");
+    const status = root.querySelector(".viewer-status");
+    const idEl = root.querySelector(".viewer-id b");
+    const nameEl = root.querySelector(".viewer-name");
+    const info = root.querySelector(".model-info");
+    const tabsEls = [...root.querySelectorAll(".model-tab")];
+    let viewer = null, dead = false, active = 0;
+
+    function renderInfo(m) {
+      info.innerHTML = `
+        <h2 class="mi-name">${esc(m.name)}</h2>
+        <p class="mi-meta">${[m.season, m.game].filter(Boolean).map(esc).join("&nbsp;&nbsp;·&nbsp;&nbsp;")}</p>
+        ${(Array.isArray(m.description) ? m.description : [m.description]).filter(Boolean).map((d) => `<p class="mi-desc">${esc(d)}</p>`).join("")}
+        ${(m.tags || []).length ? `<div class="p-meta">${m.tags.map((t) => `<span class="tag">${esc(t)}</span>`).join("")}</div>` : ""}`;
+    }
+
+    function select(k) {
+      active = k;
+      const m = models[k];
+      tabsEls.forEach((t, i) => t.setAttribute("aria-selected", String(i === k)));
+      idEl.textContent = pad(k + 1);
+      nameEl.textContent = m.name;
+      renderInfo(m);
+      if (!viewer) return;
+      viewerEl.dataset.state = "loading";
+      status.textContent = "Loading model";
+      bar.style.transform = "scaleX(0)";
+      viewer.show(assetPath(p, m.src), m.rotate || 0);
+    }
+
+    tabsEls.forEach((t) => t.addEventListener("click", () => select(+t.dataset.k)));
+    root.querySelector(".model-tabs").addEventListener("keydown", (e) => {
+      const d = e.key === "ArrowDown" || e.key === "ArrowRight" ? 1 : e.key === "ArrowUp" || e.key === "ArrowLeft" ? -1 : 0;
+      if (!d) return;
+      e.preventDefault(); e.stopPropagation();
+      const k = (active + d + models.length) % models.length;
+      select(k); tabsEls[k].focus();
+    });
+    root.querySelector(".viewer-ctrls").addEventListener("click", (e) => {
+      const b = e.target.closest("button");
+      if (!b || !viewer) return;
+      if (b.dataset.act === "reset") viewer.reset();
+      if (b.dataset.act === "spin") b.setAttribute("aria-pressed", String(viewer.toggleSpin()));
+      if (b.dataset.act === "wire") b.setAttribute("aria-pressed", String(viewer.toggleWire()));
+    });
+
+    renderInfo(models[0]);
+
+    import("./viewer.js").then(({ mount }) => {
+      if (dead) return;
+      viewer = mount({
+        canvasWrap,
+        onProgress: (f) => { bar.style.transform = `scaleX(${f})`; },
+        onReady: () => {
+          viewerEl.dataset.state = "ready";
+          status.textContent = models[active].season || "";
+          // Fetch the next model in the background so switching feels instant
+          const nx = models[(active + 1) % models.length];
+          if (nx) setTimeout(() => viewer && viewer.preload(assetPath(p, nx.src)), 400);
+        },
+        onError: () => { viewerEl.dataset.state = "error"; status.textContent = "Model failed to load"; },
+      });
+      select(active);
+    }).catch(() => { viewerEl.dataset.state = "error"; status.textContent = "3D viewer failed to load"; });
+
+    return () => { dead = true; if (viewer) viewer.dispose(); viewer = null; };
   }
 
   /* ---------- Projects slider (home) ---------- */
