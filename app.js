@@ -86,12 +86,9 @@
         </div>
         <p class="p-summary">${esc(p.summary)}</p>
         ${(p.links || []).length ? `<div class="link-row" style="margin:-24px 0 56px">${p.links.map((l) => `<a class="btn" href="${esc(l.href)}" target="_blank" rel="noopener">${esc(l.label)} ↗</a>`).join("")}</div>` : ""}
-        ${(p.models || []).length ? modelsSection(p) : ""}
+        ${(p.models || []).length ? modelsSection(p) : `<div class="gallery"><figure class="shot cover-shot"><img src="${esc(coverOf(p))}" alt="${esc(p.title)}" /></figure></div>`}
         ${(p.sections || []).length ? sectionsHTML(p) : ""}
-        <div class="gallery">
-          ${(p.models || []).length ? "" : `<figure class="shot cover-shot"><img src="${esc(coverOf(p))}" alt="${esc(p.title)}" /></figure>`}
-          ${imgs.length || !(p.models || []).length ? gallery : ""}
-        </div>
+        ${imgs.length || !((p.models || []).length || (p.sections || []).length) ? `<div class="gallery">${gallery}</div>` : ""}
         ${PROJECTS.length > 1 ? `
         <nav class="p-next">
           <a href="#/p/${encodeURIComponent(prev.slug)}">← ${esc(prev.title)}</a>

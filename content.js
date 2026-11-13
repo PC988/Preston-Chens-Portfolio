@@ -206,11 +206,71 @@ const PROJECTS = [
     slug: "ai-reader",
     title: "Assistive Reading Device",
     year: "2026",
-    tags: ["Raspberry Pi Zero 2 W", "Camera Module 3", "OCR", "TTS"],
+    tags: ["Raspberry Pi Zero 2 W", "Camera Module 3", "RapidOCR", "Python", "3D printed"],
     summary:
-      "A clip-on device that reads printed text out loud. Press a button and a Raspberry Pi Zero 2 W with a Camera Module 3 photographs the page, pulls the text out with OCR, and speaks it. Built as a low-cost alternative to commercial assistive readers, with a custom button HAT so it runs without a screen.",
+      "A small camera device that photographs printed text and reads it back out loud. It started as a pair of AI reading glasses on a Raspberry Pi 5. Four prototypes later it runs on a Pi Zero 2 W with a Camera Module 3, takes commands from a phone browser, and pulls text with OCR on the device instead of waiting on a cloud AI model.",
     images: [],
     links: [],
+    sections: [
+      {
+        title: "Iterations",
+        blocks: [
+          {
+            table: {
+              head: ["Version", "Hardware", "What changed", "What broke"],
+              rows: [
+                ["1 · Idea", "Pi 5, cheap streaming camera", "Camera frame to an AI model, text read back", "Video too blurry for small print"],
+                ["2 · Shrink it", "Pi Zero 2 W, Camera Module 3", "Real stills, 3D-printed frame", "512 MB RAM, no room for an IDE"],
+                ["2.1 · Usable", "Same, new frame", "Phone web app, handheld version, 3 modes", "Cloud AI round trip too slow"],
+                ["2.2 · Offline OCR", "Same", "RapidOCR running on the Pi", "Current version"],
+              ],
+            },
+          },
+        ],
+      },
+      {
+        title: "Prototype 1: does the idea work?",
+        blocks: [
+          "A Raspberry Pi 5 with a cheap streaming camera, coded over SSH in VS Code. The Pi grabbed a frame, sent it to an AI model, and the model read the text back or summarized it.",
+          "The idea worked. The camera didn't. A compressed video stream smears small print, so anything longer than a headline came back wrong or not at all. The lesson set up every version after it: the camera is the bottleneck, not the software.",
+        ],
+      },
+      {
+        title: "Prototype 2: make it wearable",
+        blocks: [
+          "I swapped to a Raspberry Pi Zero 2 W and a Camera Module 3, and moved from video to full-resolution stills. The Camera Module 3 has autofocus, which matters when a page is a few centimeters from the lens. The parts went into a 3D-printed frame.",
+          "Going small had a cost. The Zero 2 W has 512 MB of RAM, too little to run VS Code's remote server, so I wrote and ran everything over plain SSH from PowerShell.",
+        ],
+      },
+      {
+        title: "Prototype 2.1: make it usable",
+        blocks: [
+          "Typing terminal commands to read a page isn't a product. In this version the Pi starts a small web app at boot as a system service, so the device is controlled from a phone browser instead of a terminal.",
+          "I also redesigned the frame, added a handheld version next to the head-mounted one, and split the software into three modes:",
+          { list: ["Read: speaks the text exactly as printed.", "Summarize: shortens long passages.", "Translate: reads the page in another language."] },
+        ],
+      },
+      {
+        title: "Prototype 2.2: drop the AI",
+        blocks: [
+          "Sending every photo to a cloud vision model was the slowest part of the loop. The user presses a button, then waits on an upload, a model, and a download before hearing a word.",
+          "So for plain reading I cut the AI out and switched to RapidOCR, which pulls text from the image on the Pi itself. No network round trip, no API cost, and the page never leaves the device. The tradeoff: OCR only extracts text, so summarizing and translating still need a language model.",
+          "Every version is tested on the same printed paragraph, so results compare across prototypes.",
+        ],
+      },
+      {
+        title: "Next",
+        blocks: [
+          {
+            list: [
+              "Time each stage (capture, OCR, speech) on real pages before optimizing anything.",
+              "Move speech fully offline so reading works with no Wi-Fi at all.",
+              "Test on curved book pages, glare and small print, the cases that break OCR.",
+            ],
+          },
+        ],
+      },
+    ],
   },
   {
     slug: "vex-4253z",
