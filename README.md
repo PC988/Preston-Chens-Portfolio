@@ -15,6 +15,11 @@ Put a `.glb` in the project's folder and list it under `models` in `content.js` 
 Raw CAD STLs are too big for the web. Shrink them first, e.g. with `gltfpack -i robot.glb -o small.glb -si 0.15 -cc -noq`,
 and keep each file under ~3 MB.
 
+## Add a write-up
+Add a `sections` list to a project in `content.js` (see the Robotic Arm project). Each section has a `title`
+and `blocks`: a plain string is a paragraph, or use `{ math: [...] }`, `{ list: [...] }`,
+`{ table: { head, rows } }`, `{ note: "..." }`, or `{ embed: "demo.js" }` for an interactive module in the project folder.
+
 ## Edit the About page
 Change `ABOUT` at the top of `content.js`.
 

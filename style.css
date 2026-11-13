@@ -327,3 +327,32 @@ img { display: block; max-width: 100%; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+/* ---------- Write-up sections ---------- */
+.writeup { margin: 96px 0 72px; display: grid; gap: 72px; }
+.s-sec { display: grid; grid-template-columns: minmax(180px, 1fr) 3fr; gap: 24px 48px; border-top: 1px solid var(--line); padding-top: 28px; }
+.s-title { margin: 0; font-size: 22px; font-weight: 500; letter-spacing: -0.02em; line-height: 1.2; }
+.s-title span { display: block; font-family: var(--mono); font-size: 12px; color: var(--cyan); font-weight: 400; margin-bottom: 10px; letter-spacing: 0; }
+.s-body { min-width: 0; }
+.s-body > :not(:first-child) { margin-top: 20px; }
+.s-p { margin: 0; max-width: 68ch; font-size: 17px; line-height: 1.65; color: #b7cacd; }
+.s-note { margin: 0; font-family: var(--mono); font-size: 12px; line-height: 1.6; color: var(--muted); max-width: 72ch; }
+.s-list { margin: 0; padding: 0; list-style: none; max-width: 68ch; }
+.s-list li { position: relative; padding-left: 22px; font-size: 17px; line-height: 1.6; color: #b7cacd; }
+.s-list li + li { margin-top: 10px; }
+.s-list li::before { content: ""; position: absolute; left: 0; top: .72em; width: 10px; height: 1px; background: var(--cyan); }
+.s-math {
+  margin: 0; padding: 18px 20px; overflow-x: auto;
+  background: var(--surface); border: 1px solid var(--line); border-left: 2px solid var(--cyan); border-radius: 3px;
+  font-family: var(--mono); font-size: 14px; line-height: 1.85; color: var(--text);
+}
+.s-table-wrap { overflow-x: auto; }
+.s-table { width: 100%; border-collapse: collapse; font-size: 15px; }
+.s-table th { text-align: left; font-family: var(--mono); font-size: 12px; font-weight: 400; color: var(--cyan); background: var(--cyan-faint); padding: 10px 12px; }
+.s-table td { padding: 10px 12px; border-bottom: 1px solid var(--line); color: #c3d5d8; white-space: nowrap; }
+.s-table td:first-child { color: var(--text); }
+.s-embed { margin-top: 32px !important; }
+@media (max-width: 760px) {
+  .s-sec { grid-template-columns: 1fr; }
+  .writeup { margin-top: 64px; gap: 56px; }
+}

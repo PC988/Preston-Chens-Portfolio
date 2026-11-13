@@ -87,6 +87,7 @@
         <p class="p-summary">${esc(p.summary)}</p>
         ${(p.links || []).length ? `<div class="link-row" style="margin:-24px 0 56px">${p.links.map((l) => `<a class="btn" href="${esc(l.href)}" target="_blank" rel="noopener">${esc(l.label)} ↗</a>`).join("")}</div>` : ""}
         ${(p.models || []).length ? modelsSection(p) : ""}
+        ${(p.sections || []).length ? sectionsHTML(p) : ""}
         <div class="gallery">
           ${(p.models || []).length ? "" : `<figure class="shot cover-shot"><img src="${esc(coverOf(p))}" alt="${esc(p.title)}" /></figure>`}
           ${imgs.length || !(p.models || []).length ? gallery : ""}
@@ -103,10 +104,49 @@
     if (cover) cover.addEventListener("error", () => cover.parentElement.remove());
 
     const disposeModels = (p.models || []).length ? mountModels(p) : null;
+    const disposeEmbeds = mountEmbeds(p);
 
     const onKey = (e) => { if (e.key === "Escape") location.hash = "#/"; };
     window.addEventListener("keydown", onKey);
-    cleanup = () => { window.removeEventListener("keydown", onKey); if (disposeModels) disposeModels(); };
+    cleanup = () => { window.removeEventListener("keydown", onKey); if (disposeModels) disposeModels(); disposeEmbeds(); };
+  }
+
+  /* ---------- Write-up sections (project page) ----------
+     Each section: { title, blocks: [...] }. A block is either a string (a paragraph)
+     or one of: { math: [lines] }, { list: [items] }, { table: { head: [], rows: [[]] } },
+     { note: "small print" }, { embed: "file.js" } (a module in the project folder that
+     exports mount(el) and returns a cleanup function). */
+  function blockHTML(p, b) {
+    if (typeof b === "string") return `<p class="s-p">${esc(b)}</p>`;
+    if (b.math) return `<pre class="s-math">${b.math.map(esc).join("\n")}</pre>`;
+    if (b.list) return `<ul class="s-list">${b.list.map((li) => `<li>${esc(li)}</li>`).join("")}</ul>`;
+    if (b.note) return `<p class="s-note">${esc(b.note)}</p>`;
+    if (b.table) return `
+      <div class="s-table-wrap"><table class="s-table">
+        <thead><tr>${b.table.head.map((h) => `<th>${esc(h)}</th>`).join("")}</tr></thead>
+        <tbody>${b.table.rows.map((r) => `<tr>${r.map((c) => `<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody>
+      </table></div>`;
+    if (b.embed) return `<div class="s-embed" data-src="${esc(assetPath(p, b.embed))}"></div>`;
+    return "";
+  }
+
+  function sectionsHTML(p) {
+    return `<div class="writeup">${p.sections.map((sec, k) => `
+      <section class="s-sec">
+        <h2 class="s-title"><span>${pad(k + 1)}</span>${esc(sec.title)}</h2>
+        <div class="s-body">${(sec.blocks || []).map((b) => blockHTML(p, b)).join("")}</div>
+      </section>`).join("")}</div>`;
+  }
+
+  function mountEmbeds() {
+    const disposers = [];
+    let dead = false;
+    app.querySelectorAll(".s-embed").forEach((el) => {
+      import(new URL(el.dataset.src, location.href).href)
+        .then((m) => { if (!dead) disposers.push(m.mount(el) || (() => {})); })
+        .catch(() => { el.innerHTML = `<div class="empty">Demo failed to load</div>`; });
+    });
+    return () => { dead = true; disposers.forEach((d) => d()); };
   }
 
   /* ---------- 3D models (project page) ---------- */
