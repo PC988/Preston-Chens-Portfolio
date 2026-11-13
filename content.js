@@ -231,7 +231,8 @@ const PROJECTS = [
       {
         title: "Prototype 1: does the idea work?",
         blocks: [
-          "A Raspberry Pi 5 with a cheap streaming camera, coded over SSH in VS Code. The Pi grabbed a frame, sent it to an AI model, and the model read the text back or summarized it.",
+          "A Raspberry Pi 5 with a cheap streaming camera, coded over SSH in VS Code. The Pi grabbed a frame, sent it to GPT-4o, and the model read the text back or summarized it.",
+          { img: "prototype-1.jpg", caption: "First working test: a captured frame on the left, GPT-4o's reading in the terminal below." },
           "The idea worked. The camera didn't. A compressed video stream smears small print, so anything longer than a headline came back wrong or not at all. The lesson set up every version after it: the camera is the bottleneck, not the software.",
         ],
       },
@@ -239,6 +240,7 @@ const PROJECTS = [
         title: "Prototype 2: make it wearable",
         blocks: [
           "I swapped to a Raspberry Pi Zero 2 W and a Camera Module 3, and moved from video to full-resolution stills. The Camera Module 3 has autofocus, which matters when a page is a few centimeters from the lens. The parts went into a 3D-printed frame.",
+          { img: "prototype-2-parts.jpg", caption: "Pi Zero 2 W, Camera Module 3 on its ribbon cable, and the printed case halves." },
           "Going small had a cost. The Zero 2 W has 512 MB of RAM, too little to run VS Code's remote server, so I wrote and ran everything over plain SSH from PowerShell.",
         ],
       },
@@ -248,6 +250,7 @@ const PROJECTS = [
           "Typing terminal commands to read a page isn't a product. In this version the Pi starts a small web app at boot as a system service, so the device is controlled from a phone browser instead of a terminal.",
           "I also redesigned the frame, added a handheld version next to the head-mounted one, and split the software into three modes:",
           { list: ["Read: speaks the text exactly as printed.", "Summarize: shortens long passages.", "Translate: reads the page in another language."] },
+          { img: "web-app.jpg", caption: "The phone web app reading a page of Othello. Capture & Read takes a photo and reads it back." },
         ],
       },
       {

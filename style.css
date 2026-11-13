@@ -357,3 +357,6 @@ img { display: block; max-width: 100%; }
   .s-sec { grid-template-columns: 1fr; }
   .writeup { margin-top: 64px; gap: 56px; }
 }
+.s-fig { margin: 0; }
+.s-fig img { display: block; width: auto; max-width: min(100%, 720px); max-height: 540px; height: auto; border: 1px solid var(--line); border-radius: 3px; }
+.s-fig figcaption { margin-top: 10px; font-family: var(--mono); font-size: 12px; line-height: 1.5; color: var(--muted); max-width: 720px; }

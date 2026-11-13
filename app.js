@@ -111,7 +111,7 @@
   /* ---------- Write-up sections (project page) ----------
      Each section: { title, blocks: [...] }. A block is either a string (a paragraph)
      or one of: { math: [lines] }, { list: [items] }, { table: { head: [], rows: [[]] } },
-     { note: "small print" }, { embed: "file.js" } (a module in the project folder that
+     { note: "small print" }, { img: "photo.jpg", caption }, { embed: "file.js" } (a module in the project folder that
      exports mount(el) and returns a cleanup function). */
   function blockHTML(p, b) {
     if (typeof b === "string") return `<p class="s-p">${esc(b)}</p>`;
@@ -123,6 +123,11 @@
         <thead><tr>${b.table.head.map((h) => `<th>${esc(h)}</th>`).join("")}</tr></thead>
         <tbody>${b.table.rows.map((r) => `<tr>${r.map((c) => `<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody>
       </table></div>`;
+    if (b.img) return `
+      <figure class="s-fig">
+        <img src="${esc(assetPath(p, b.img))}" alt="${esc(b.caption || p.title)}" loading="lazy" />
+        ${b.caption ? `<figcaption>${esc(b.caption)}</figcaption>` : ""}
+      </figure>`;
     if (b.embed) return `<div class="s-embed" data-src="${esc(assetPath(p, b.embed))}"></div>`;
     return "";
   }
