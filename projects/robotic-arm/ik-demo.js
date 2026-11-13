@@ -73,9 +73,9 @@ export function mount(el) {
         <div class="ik-bars">
           <div class="ik-bar" data-k="shoulder"><span class="ik-lab">Shoulder torque</span><span class="ik-val"></span><i><b></b><em></em></i></div>
           <div class="ik-bar" data-k="elbow"><span class="ik-lab">Elbow torque</span><span class="ik-val"></span><i><b></b><em></em></i></div>
-          <div class="ik-bar" data-k="tip"><span class="ik-lab">Tipping (vs base weight)</span><span class="ik-val"></span><i><b></b><em></em></i></div>
+          <div class="ik-bar" data-k="tip"><span class="ik-lab">Tipping if unbolted</span><span class="ik-val"></span><i><b></b><em></em></i></div>
         </div>
-        <p class="ik-foot">Bars show % of MG996R stall torque. The tick is the 50% line I design to. Tipping assumes the arm points between two feet.</p>
+        <p class="ik-foot">Bars show % of MG996R stall torque. The tick is the 50% line I design to. Tipping is for a loose base pointing between two feet. Mine is screwed to a baseboard.</p>
       </div>
     </div>`;
 

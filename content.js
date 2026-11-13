@@ -174,14 +174,14 @@ const PROJECTS = [
             ],
           },
           "The servo's no-load speed is 60° per 0.14 s, about 7.5 rad/s. At 83 rad/s² it takes roughly 0.09 s and 19° just to get up to speed with the arm extended. Jump the setpoint across the workspace and the shoulder saturates and overshoots, so the code should ramp the angle (a trapezoidal speed profile) instead of snapping to it.",
-          "Tipping is the surprise. The base, turntable and two lower servos weigh about 336 g, and the edge of the feet is 72 mm from the center. With the arm straight out between two feet, the arm's own weight creates almost exactly as much tipping moment as the base resists:",
+          "Tipping is why the base is screwed down. The base, turntable and two lower servos weigh about 336 g, and the edge of the feet is 72 mm from the center. With the arm straight out between two feet, the arm's own weight creates almost exactly as much tipping moment as a loose base can resist:",
           {
             math: [
               "Overturning  = Σ m·(x − 72 mm)  ≈ 22.6 g·m   (unloaded)",
               "Restoring    = 336 g × 72 mm    ≈ 24.2 g·m",
             ],
           },
-          "That's a 7% margin. A 7 g object at the claw tips the whole arm. To hold 50 g at full reach with a 1.5× safety factor the base needs about 370 g of ballast, or simply screws into the desk.",
+          "That's a 7% margin, so free-standing, a 7 g object at the claw would tip the whole arm. Holding 50 g at full reach with a 1.5× safety factor would take about 370 g of ballast. Instead, the feet are screwed to a large baseboard, which moves the tipping edge far out and takes it off the table as a failure mode.",
           "Precision is set by the servo's 5 µs dead band. Across a 2000 µs range for 180°, that's about 0.45° of slop per joint. At 294 mm of reach, 0.45° moves the claw about 2.3 mm, before any gear backlash.",
           "The claw: the servo turns one finger gear, which drives the other 1:1, so both fingers share the torque. With about 71 mm from finger pivot to jaw, grip force ≈ τ / (2 × 0.071 m) ≈ 6.5 N at 4.8 V stall, so roughly 3 N of squeeze at a safe 50%.",
         ],
@@ -189,13 +189,12 @@ const PROJECTS = [
       {
         title: "What the numbers say",
         blocks: [
-          "The shoulder is the bottleneck, and 55% of its load is the claw servo and fingers hanging at the far end. That points to the next version:",
+          "With the base screwed down, the shoulder is the bottleneck, and 55% of its load is the claw servo and fingers hanging at the far end. That points to the next version:",
           {
             list: [
               "Swap the claw servo for a micro servo like an SG90 (9 g). Cuts shoulder load by about a quarter.",
               "Move the elbow servo down to the base and drive the elbow through a parallel linkage, like a MeArm. Another 55 g off the arm.",
               "Add a counterweight or spring behind the shoulder so the servo only handles the difference.",
-              "Weight or bolt down the base before anything else. It tips before the servos stall.",
             ],
           },
           { note: "Assumptions: PLA at ~0.62 g/cm³ effective, servo mass 55 g, static torques except where noted, screws and wiring ignored. Real printed parts and servos vary, so treat these as estimates to test against." },
@@ -209,21 +208,8 @@ const PROJECTS = [
     year: "2026",
     tags: ["Raspberry Pi Zero 2 W", "Camera Module 3", "OCR", "TTS"],
     summary:
-      "An cheap assistive pointer that reads printed text out loud. A Raspberry Pi Zero 2 W and Camera Module 3 capture the page, and a custom button HAT controls it.",
+      "A clip-on device that reads printed text out loud. Press a button and a Raspberry Pi Zero 2 W with a Camera Module 3 photographs the page, pulls the text out with OCR, and speaks it. Built as a low-cost alternative to commercial assistive readers, with a custom button HAT so it runs without a screen.",
     images: [],
-    links: [],
-  },
-  {
-    slug: "adaptive-insole",
-    title: "Adaptive Insole",
-    year: "2026",
-    tags: ["ESP32", "Servo", "TPU", "Onshape", "Three.js"],
-    summary:
-      "A pressure-offloading insole designed to help prevent foot ulcers. Pods deflate under high-pressure zones instead of lifting the foot. Two prototypes: a static 3D-printed four-zone insole and a servo-driven single-pod demonstrator.",
-    images: [
-      // { src: "prototype-1.jpg", caption: "Four-zone static insole, printed in TPU" },
-      // { src: "pod-demo.jpg", caption: "Servo-driven single-pod demonstrator" },
-    ],
     links: [],
   },
   {
