@@ -50,6 +50,111 @@ const ABOUT = {
 
 const PROJECTS = [
   {
+    slug: "lunar-lander",
+    title: "Lunar Lander RL",
+    year: "2026",
+    tags: ["Python", "PyTorch", "Gymnasium", "Deep Q-Network", "Reinforcement learning"],
+    summary:
+      "A neural network that teaches itself to land a spacecraft from nothing but a score. I started from Julian Kappler's open-source Deep Q-Network agent and tested how it learns. Learning every 3 game steps instead of every 5 cut the training it needed from 1,234 episodes to 833 on average (p = 0.016).",
+    images: [],
+    links: [{ label: "Original agent", href: "https://github.com/juliankappler/lunar-lander" }],
+    sections: [
+      {
+        title: "The task",
+        blocks: [
+          "Gymnasium's Lunar Lander drops a spacecraft over random terrain with a landing pad between two flags. Every step the agent picks one of 4 actions: do nothing, fire the left engine, fire the main engine, or fire the right engine. It gets no instructions. It only sees a reward, and has to work out what earns it.",
+          { img: "crash.jpg", caption: "A failed run: tilted and drifting, it comes down on the slope next to the pad. Compare the clean landing at the top." },
+          "What the agent sees is 8 numbers, each scaled to roughly −1 to 1, because neural networks learn better when their inputs share a scale:",
+          {
+            table: {
+              head: ["#", "Meaning", "Example from a random agent"],
+              rows: [
+                ["1", "Horizontal position (0 = pad)", "−0.09, just left of the pad"],
+                ["2", "Height", "−0.01, on the ground"],
+                ["3", "Horizontal speed", "−0.01"],
+                ["4", "Vertical speed", "−0.19, still sinking"],
+                ["5", "Tilt angle", "0.54 rad, about 31°"],
+                ["6", "Spin speed", "−3.14, spinning hard"],
+                ["7", "Left leg touching", "0"],
+                ["8", "Right leg touching", "1"],
+              ],
+            },
+          },
+        ],
+      },
+      {
+        title: "Reward and learning",
+        blocks: [
+          "The reward is shaped: each step earns this step's score minus the last step's. The score penalizes distance from the pad, speed and tilt, and adds +10 for each leg on the ground. A crash costs −100. Spin is never penalized directly, but the agent learns to stop spinning anyway, because spin turns into tilt and tilt turns into crashes.",
+          "The agent is a small network, 8 inputs → 128 → 32 → 4 outputs, 5,412 weights in all. It scores each action and picks the highest. After every move it checks its guess against what actually happened: the reward it got plus its own estimate of the next state. Gradient descent nudges every weight to shrink that gap.",
+          {
+            math: [
+              "target = reward + γ · max Q_target(next state, a)",
+              "loss   = (Q(state, action) − target)²",
+            ],
+          },
+          "Three settings control that loop, and they are the ones I tested:",
+          {
+            list: [
+              "Training stride: how many game steps pass between learning updates. Default 5.",
+              "Learning rate: how big each weight update is. Default 0.001.",
+              "Epsilon: the share of random actions left at the end of training, so the agent keeps exploring. Default 0.1.",
+            ],
+          },
+        ],
+      },
+      {
+        title: "Method",
+        blocks: [
+          "Training results swing a lot between identical runs. The unchanged agent took anywhere from 1,006 to 1,410 episodes to solve the game across 5 runs. One lucky run proves nothing, so every claim needed repeated runs and a statistical test.",
+          {
+            list: [
+              "Change one setting, keep everything else fixed.",
+              "Space values widely so an effect can show.",
+              "Run each setting at least 3 times.",
+              "Record episodes to solve, final score (mean of the last 20 episodes) and training time.",
+              "Compare against the baseline with Welch's t-test and 95% confidence intervals.",
+            ],
+          },
+          "The stopping rule never changed: training ends when the last 20 episodes all score above 200 and average above 230. Lowering it would end training sooner without making the agent any better.",
+        ],
+      },
+      {
+        title: "Results",
+        blocks: [
+          "Only training stride made a clear difference. Each dot below is one full training run.",
+          { embed: "runs-chart.js" },
+          {
+            table: {
+              head: ["Setting", "Runs", "Episodes to solve", "Final score", "p (episodes)"],
+              rows: [
+                ["Original (stride 5)", "5", "1,234", "255.4", "reference"],
+                ["Stride 1", "3", "1,177", "250.9", "0.81"],
+                ["Stride 2", "2", "1,004", "249.5", "0.03, only 2 runs"],
+                ["Stride 3", "3", "833", "241.9", "0.016"],
+                ["Stride 3, LR 0.0005", "3", "1,096", "241.7", "0.07 vs stride 3"],
+                ["Stride 3, LR 0.002", "2", "1,140", "254.2", "0.05 vs stride 3"],
+                ["Epsilon 0.05", "3", "1,160", "251.1", "0.37"],
+                ["Epsilon 0.075", "3", "1,246", "248.8", "0.95"],
+                ["Epsilon 0.125", "3", "1,193", "260.1", "0.83"],
+              ],
+            },
+          },
+          "Stride 3 is the result: a third fewer episodes, and no slower to run. Its first two runs averaged 166 s of training against 188 s for the original. The cost is the finish. Stride 3 agents end at a final score of 242 against 255, still above the 230 bar but clearly lower.",
+          "The learning rate was already well tuned. Halving it and doubling it both made training slower.",
+          "Epsilon did nothing to training speed between 5% and 12.5% randomness, and that is a real result too. Two side findings: more randomness at the end went with a higher final score (+3.4 points per 0.025, p = 0.018, a lead rather than a conclusion after correcting for two tests), and low-epsilon runs took 227 ms per episode instead of 151 ms, because chosen actions run the network and random ones skip it.",
+        ],
+      },
+      {
+        title: "Why 3, not 1?",
+        blocks: [
+          "Learning more often should mean learning faster, but stride 1 was no better than the default and wildly inconsistent, from 776 to 1,459 episodes. My best explanation: the agent learns against a second, slow-moving target network that shifts a little after every update. At stride 1 it shifts 5 times as often per second of game time, so the agent ends up chasing its own moving predictions. Stride 3 updates often enough to learn quickly without that churn.",
+          { note: "This explanation fits the spread in the stride 1 runs, but I haven't tested it directly. Limits: 2 to 5 runs per setting, so the confidence intervals are wide, and stride 2 has only 2 runs." },
+        ],
+      },
+    ],
+  },
+  {
     slug: "robotic-arm",
     title: "Robotic Arm",
     year: "2026",
