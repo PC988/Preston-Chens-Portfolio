@@ -55,7 +55,7 @@ const PROJECTS = [
     year: "2026",
     tags: ["Python", "PyTorch", "Gymnasium", "Deep Q-Network", "Reinforcement learning"],
     summary:
-      "A neural network that teaches itself to land a spacecraft from nothing but a score. I started from Julian Kappler's open-source Deep Q-Network agent and tested how it learns. Learning every 3 game steps instead of every 5 cut the training it needed from 1,234 episodes to 833 on average (p = 0.016).",
+      "The Lunar Landing simulation is a neural network that teaches itself to land a spacecraft through reinforcement learning. I built off of Julian Kappler's open-source Deep Q-Network agent and tested how it learns. Through improving on the positive and negative behavior code, I was able to make the updated model cut the training it needed from 1,234 episodes to 833 on average (p = 0.016).",
     images: [],
     links: [{ label: "Original agent", href: "https://github.com/juliankappler/lunar-lander" }],
     sections: [
